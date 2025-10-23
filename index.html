@@ -1,0 +1,158 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zahid Medina Rojas - CV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .left-column, .right-column {
+            padding: 20px;
+        }
+        .left-column {
+            flex: 1;
+            background-color: #fff;
+            text-align: center;
+        }
+        .right-column {
+            flex: 2;
+            background-color: #fff;
+        }
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        h1 {
+            margin: 10px 0;
+            font-size: 2.5em;
+        }
+        h2 {
+            margin-top: 20px;
+            border-bottom: 1px solid #000;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        .contact li:before {
+            content: "•";
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-column">
+            <img src="profile.jpg" alt="Zahid Medina Rojas" class="profile-img">
+            <h1>Zahid Medina Rojas</h1>
+            <h2>Estudiante de Sistemas</h2>
+            <div class="contact">
+                <h2>Contacto</h2>
+                <ul>
+                    <li>73695954</li>
+                    <li>r0088388@gmail.com</li>
+                    <li>B/San Juan - C/3</li>
+                </ul>
+            </div>
+            <div class="about">
+                <h2>Sobre mí</h2>
+                <p>Soy una persona proactiva, responsable, trabajador, soy persistente y aprendo rápido en lo que se necesite ayuda. Sé relacionarme y cómo tratar al cliente en lo que requiera.</p>
+            </div>
+            <div class="more-info">
+                <h2>Más información</h2>
+                <ul>
+                    <li>Disponibilidad total.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="right-column">
+            <div class="experience">
+                <h2>Experiencia</h2>
+                <p><strong>Práctica personal - Manejo de equipos y programas informáticos</strong><br>Proyecto personal | 2025 – Actualidad<br>Uso eficiente de computadoras y software de oficina (Word, Excel, PowerPoint).<br>Navegación en internet y gestión de información digital.<br>Instalación básica de programas y mantenimiento preventivo.<br>Apoyo a familiares y compañeros en tareas tecnológicas.</p>
+            </div>
+            <div class="education">
+                <h2>Datos académicos</h2>
+                <p><strong>Universidad Privada Domingo Savio</strong><br>ESTUDIOS EN ING. SISTEMAS | ACTUAL</p>
+                <p><strong>Centro de estudios - Colegio Marista</strong><br>Estudios en Técnico Electricidad | 2022</p>
+            </div>
+            <div class="skills">
+                <h2>Habilidades</h2>
+                <ul>
+                    <li>Buena comunicación</li>
+                    <li>Gestión de grandes equipos</li>
+                    <li>Resolución de problemas</li>
+                    <li>Trato profesional</li>
+                    <li>Espíritu Trabajador</li>
+                    <li>Agilidad con los resultados</li>
+                    <li>Sincero y directo</li>
+                </ul>
+            </div>
+            <div class="languages">
+                <h2>Idiomas</h2>
+                <ul>
+                    <li>Español: Nativo.</li>
+                    <li>Inglés: Nivel Medio.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
